@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#fcfbf8">
+  <meta name="description" content="AdaViG: training-free adaptive visual gating for unified multimodal reasoning. Learn when to draw from early diffusion attention.">
+  <meta property="og:title" content="AdaViG — Model Guides You How to Draw">
+  <meta property="og:description" content="Adaptive Visual Gating for Unified Multimodal Reasoning. Keep helpful visual thoughts. Stop misleading ones early.">
+  <meta property="og:type" content="website">
+  <title>AdaViG · Model Guides You How to Draw</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="site-config.js" defer></script>
+  <script src="assets/main.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <a class="wordmark" href="#" aria-label="AdaViG home"><span class="brand-mark" aria-hidden="true">a<span>v</span></span>AdaViG<span class="brand-dot">.</span></a>
+  <nav aria-label="Main navigation"><a href="#overview">Overview</a><a href="#method">Method</a><a href="#results">Results</a><a href="#resources">Resources <span aria-hidden="true">↗</span></a></nav>
+</header>
+<aside class="section-nav" aria-label="On this page"><span>IN THIS WORK</span><a href="#overview">01 &nbsp; Overview</a><a href="#observations">02 &nbsp; Observations</a><a href="#method">03 &nbsp; Method</a><a href="#results">04 &nbsp; Results</a><a href="#efficiency">05 &nbsp; Efficiency</a><a href="#resources">06 &nbsp; Resources</a></aside>
+<main id="main">
+  <section class="hero" aria-labelledby="paper-title">
+    <div class="eyebrow"><span class="small-line"></span> UNIFIED MULTIMODAL REASONING</div>
+    <h1 id="paper-title">Model Guides You<br><em>How to Draw.</em></h1>
+    <p class="paper-subtitle">Adaptive Visual Gating for<br class="mobile-break"> Unified Multimodal Reasoning</p>
+    <div class="authors" id="authors"></div>
+    <p class="affiliations" id="affiliations"></p>
+    <div class="hero-actions"><a class="button primary" href="assets/AdaViG-code.zip" id="code-link"><span aria-hidden="true">⌘</span> Get the code <span aria-hidden="true">↗</span></a><a class="button secondary" href="#overview" id="paper-link">Explore the paper <span aria-hidden="true">↓</span></a></div>
+    <p class="hero-takeaway">Keep helpful visual thoughts.<br>Stop misleading ones <span>before they are drawn.</span></p>
+    <div class="stats" aria-label="Reported results"><div><strong>+5.7<span>pp</span></strong><p>accuracy improvement<br><span>up to · DynaMath / Bagel-Canvas</span></p></div><div><strong>91<span>%</span></strong><p>less image-generation compute<br><span>up to · WeMath / Bagel-Zebra-CoT</span></p></div><div><strong>45.6<span>%</span></strong><p>lower end-to-end latency<br><span>up to · WeMath / Bagel-Zebra-CoT</span></p></div></div>
+  </section>
+
+  <section id="overview" class="section">
+    <div class="section-heading"><span class="section-number">01 / OVERVIEW</span><h2>Drawing is a reasoning step.<br>It can also be a wrong turn.</h2></div>
+    <p class="lead">Unified multimodal models can draw diagrams as part of their reasoning. But a generated image is not always useful: an incorrect construction can become false evidence for everything that follows.</p>
+    <figure class="paper-figure"><button class="figure-button" data-zoom aria-label="Enlarge comparison of fixed and adaptive visual reasoning"><img src="assets/figures/teaser.png" alt="A triangle problem: MathCanvas introduces an incorrect auxiliary line and gives 17/4, while AdaViG aborts the misleading visual step and reaches the correct answer, 4.8." width="2200" height="1059" fetchpriority="high"></button><figcaption><span>FIG. 01</span> A harmful visual thought can derail an otherwise solvable problem. AdaViG uses early internal signals to stop it and continue reasoning in text.</figcaption></figure>
+    <details class="abstract"><summary>Read the abstract <span aria-hidden="true">+</span></summary><p>Unified multimodal models with interleaved reasoning generate both textual and visual steps as part of intermediate reasoning traces. However, generating intermediate visual reasoning steps is not always beneficial: self-generated visuals can introduce erroneous evidence that misleads subsequent reasoning, while incurring substantial computation and memory overhead. We identify two internal signals available before visual generation is complete: Generation Intent, which reflects whether the model has a concrete textual plan for what to draw, and Visual Fidelity, which measures grounding in the original input image. AdaViG is a training-free adaptive visual gating method that evaluates these signals early in diffusion and aborts a visual step when both are weak. Experiments show accuracy improvements of up to 5.7 percentage points, image-generation FLOPs reductions of 25.0%–91.0%, and wall-clock latency reductions of 15.4%–45.6%.</p></details>
+  </section>
+
+  <section id="observations" class="section">
+    <div class="section-heading"><span class="section-number">02 / OBSERVATIONS</span><h2>Two signals.<br>One early decision.</h2></div>
+    <div class="signal-columns"><article><span class="signal-label intent-color">I / GENERATION INTENT</span><h3>Does the model know<br>what it wants to draw?</h3><p>Attention to preceding text reveals whether the visual step follows a concrete reasoning plan. Without a plan, generation can add unconstrained details.</p></article><article><span class="signal-label fidelity-color">F / VISUAL FIDELITY</span><h3>Is the drawing grounded<br>in the original image?</h3><p>Attention to the input image reveals whether generation remains tied to the problem. Weak grounding can let the diagram drift away from its constraints.</p></article></div>
+    <figure class="paper-figure"><button class="figure-button" data-zoom aria-label="Enlarge generation utility and early attention figure"><img src="assets/figures/overview.png" alt="At diffusion step 5, harmful traces cluster where Generation Intent and Visual Fidelity are both low. A helpful trace with an explicit construction plan is retained." width="2000" height="752" loading="lazy"></button><figcaption><span>FIG. 02</span> Early diffusion attention predicts generation utility. Harmful traces concentrate in the low-intent, low-fidelity region; either strong signal can justify continuing.</figcaption></figure>
+  </section>
+
+  <section id="method" class="section">
+    <div class="section-heading"><span class="section-number">03 / METHOD</span><h2>A small intervention,<br>before the expensive part.</h2></div>
+    <p class="lead">When the model triggers a visual step, run the first <strong>5 of 50 diffusion steps</strong>. Read the two attention signals. Abort only when both are weak; otherwise, let the model finish drawing.</p>
+    <div class="method-flow" aria-label="AdaViG inference flow"><div><span>01</span><strong>Begin a visual thought</strong><p>The model predicts an image-start token.</p></div><span class="flow-arrow" aria-hidden="true">→</span><div><span>02</span><strong>Inspect early attention</strong><p>Measure intent and fidelity at step 5.</p></div><span class="flow-arrow" aria-hidden="true">→</span><div><span>03</span><strong>Continue or abort</strong><p>Keep the image, or resume text reasoning.</p></div></div>
+    <div class="gate-demo"><div class="demo-copy"><span class="section-number">EXPLORE THE GATE</span><h3>Move the signals.<br>See the decision.</h3><p>A strong plan <em>or</em> strong visual grounding is enough to keep drawing.</p><p class="demo-note">Illustrative inputs · Bagel-Canvas thresholds<br>Intent 0.60 / Fidelity 0.01</p></div><div class="demo-controls"><label for="intent">Generation Intent <output id="intent-value" for="intent">0.35</output></label><input id="intent" type="range" min="0" max="1" step="0.01" value="0.35"><label for="fidelity">Visual Fidelity <output id="fidelity-value" for="fidelity">0.008</output></label><input id="fidelity" type="range" min="0" max="0.04" step="0.001" value="0.008"><div class="gate-decision abort" id="gate-decision" role="status" aria-live="polite"><span class="decision-dot"></span><div><strong id="decision-title">Abort visual generation</strong><p id="decision-copy">Both signals are weak. Continue reasoning in text.</p></div></div></div></div>
+    <p class="method-note">No model training. No external verifier. The runtime retains the original implementation's boundary convention: continue when either signal strictly exceeds its threshold.</p>
+  </section>
+
+  <section id="results" class="section">
+    <div class="section-heading"><span class="section-number">04 / RESULTS</span><h2>Better answers.<br>Fewer visual generations.</h2></div>
+    <div class="results-intro"><p>Evaluated on five mathematical reasoning benchmarks with two unified multimodal models. Switch the backbone to explore the reported results.</p><div class="model-switch" role="group" aria-label="Select model"><button type="button" data-model="canvas" aria-pressed="true">Bagel-Canvas</button><button type="button" data-model="zebra" aria-pressed="false">Bagel-Zebra-CoT</button></div></div>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Benchmark results"><table><caption class="sr-only" id="results-caption">Bagel-Canvas benchmark accuracy and image-generation FLOPs reduction</caption><thead><tr><th scope="col">Benchmark</th><th scope="col">Baseline</th><th scope="col">+ AdaViG</th><th scope="col">Accuracy gain</th><th scope="col">Image FLOPs ↓</th></tr></thead><tbody id="results-body"><tr><td colspan="5">Loading results…</td></tr></tbody></table></div>
+    <p class="table-note">Accuracy in %. Gains in percentage points (pp). FLOPs reductions refer to image generation, not total inference compute. Values are transcribed from the manuscript's main results table.</p>
+    <div class="result-summary"><span id="average-gain">+3.4 pp</span><p>average accuracy improvement<br><strong id="average-model">on Bagel-Canvas</strong></p><span class="result-divider"></span><span id="average-flops">32%</span><p>average reduction<br><strong>in image-generation FLOPs</strong></p></div>
+  </section>
+
+  <section id="efficiency" class="section">
+    <div class="section-heading"><span class="section-number">05 / EFFICIENCY</span><h2>Stop early.<br>Save the remaining work.</h2></div>
+    <p class="lead">Aborting at step 5 avoids about <strong>90% of the denoising steps</strong> for that visual generation. Across the evaluated models and benchmarks, the paper reports end-to-end latency reductions of <strong>15.4%–45.6%</strong>.</p>
+    <figure class="paper-figure"><button class="figure-button" data-zoom aria-label="Enlarge latency and memory breakdown"><img src="assets/figures/efficiency.png" alt="Reported relative end-to-end latency and KV-cache memory, decomposed into text and image components across benchmarks." loading="lazy"></button><figcaption><span>FIG. 03</span> Relative latency and KV-cache memory breakdown. Fewer generated images can also reduce the downstream text work conditioned on them.</figcaption></figure>
+    <div class="measurement-note"><span aria-hidden="true">↳</span><p>Latency is measured on a single NVIDIA H200 (141 GB). MathVista uses its GPS subset; OlympiadBench uses its Math subset. Thresholds are tuned on MathVision testmini and fixed for evaluation.</p></div>
+  </section>
+
+  <section id="resources" class="section resources">
+    <div class="section-heading"><span class="section-number">06 / RESOURCES</span><h2>Take a closer look.</h2></div>
+    <a class="resource-row" id="resource-code" href="assets/AdaViG-code.zip"><div><span>01</span><div><h3>Code & reproduction</h3><p>Inference, attention instrumentation, calibration, and evaluation.</p></div></div><span aria-hidden="true">↗</span></a>
+    <a class="resource-row" href="assets/figures/case-study.png" target="_blank" rel="noopener"><div><span>02</span><div><h3>Qualitative comparison</h3><p>Inspect reasoning traces from the paper.</p></div></div><span aria-hidden="true">↗</span></a>
+    <div class="citation-heading"><h3>Citation</h3><button type="button" id="copy-citation">Copy BibTeX <span aria-hidden="true">↗</span></button></div><pre><code id="citation"></code></pre><p class="citation-note">Manuscript citation. Publication details will be added when available.</p><span id="copy-status" class="sr-only" role="status"></span>
+  </section>
+  <footer><a class="wordmark" href="#">AdaViG<span class="brand-dot">.</span></a><p>Adaptive Visual Gating for Unified Multimodal Reasoning</p><a href="#main">Back to top ↑</a></footer>
+</main>
+<dialog id="figure-dialog" aria-label="Enlarged paper figure"><button type="button" id="close-figure" aria-label="Close enlarged figure">Close ×</button><img id="enlarged-figure" alt=""></dialog>
+<noscript><p class="noscript">Enable JavaScript to use the interactive gate and model selector. The method and paper figures remain available above.</p></noscript>
+</body>
+</html>
