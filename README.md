@@ -11,7 +11,11 @@
   <sup>1</sup> Imperial College London &nbsp;&nbsp; <sup>2</sup> Tsinghua University
 </p>
 
-[Project page](https://xer-gwx.github.io/AdaViG/) · [Website source](https://github.com/Xer-GWX/AdaViG/tree/gh-pages)
+<p align="center">
+  <a href="https://arxiv.org/abs/2607.10004">📄 arXiv</a> ·
+  <a href="https://xer-gwx.github.io/AdaViG/">🌐 Project page</a> ·
+  <a href="https://github.com/Xer-GWX/AdaViG/tree/gh-pages">Website source</a>
+</p>
 
 AdaViG is a training-free method that decides whether to continue a visual reasoning step. At an early diffusion step, it measures **Generation Intent** (attention to the preceding text) and **Visual Fidelity** (attention to the input image). When both signals are weak, it stops image generation and resumes text reasoning.
 
