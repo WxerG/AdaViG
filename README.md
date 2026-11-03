@@ -13,11 +13,23 @@
 
 <p align="center">
   <a href="https://arxiv.org/abs/2607.10004">📄 arXiv</a> ·
-  <a href="https://xer-gwx.github.io/AdaViG/">🌐 Project page</a> ·
-  <a href="https://github.com/Xer-GWX/AdaViG/tree/gh-pages">Website source</a>
+  <a href="https://wxerg.github.io/AdaViG/">🌐 Project page</a> ·
+  <a href="https://github.com/WxerG/AdaViG/tree/gh-pages">Website source</a>
 </p>
 
 AdaViG is a training-free method that decides whether to continue a visual reasoning step. At an early diffusion step, it measures **Generation Intent** (attention to the preceding text) and **Visual Fidelity** (attention to the input image). When both signals are weak, it stops image generation and resumes text reasoning.
+
+<p align="center">
+  <img src="assets/figures/teaser.png" alt="A harmful visual reasoning example under the fixed MathCanvas paradigm, compared with AdaViG stopping the misleading image generation and recovering the correct answer." width="100%">
+</p>
+
+## 🔍 Method
+
+AdaViG uses two early diffusion attention signals to decide whether to keep a visual reasoning step. Generation Intent measures attention to the preceding text, while Visual Fidelity measures attention to the original image. Generation continues when either signal exceeds its threshold; otherwise, the current image generation is stopped and reasoning resumes in text.
+
+<p align="center">
+  <img src="assets/figures/method.png" alt="Early diffusion Generation Intent and Visual Fidelity separate harmful and helpful visual reasoning traces, with low values in both signals defining the abort region." width="100%">
+</p>
 
 ## 🛠️ Setup
 
