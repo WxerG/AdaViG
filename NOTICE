@@ -1,0 +1,14 @@
+AdaViG builds on MathCanvas (https://github.com/shiwk24/MathCanvas)
+and BAGEL (https://github.com/ByteDance-Seed/Bagel).
+
+The inference dependency files were taken from MathCanvas commit
+9b48cc81ab1f63d418a954e4502c3c6274068a7b. AdaViG changes the inference
+loop, early-diffusion attention instrumentation, gate, runtime metrics,
+data handlers, and benchmark evaluators. Original source headers and the
+Apache-2.0 license are retained. Model weights and datasets are distributed
+separately by their respective owners under their own terms.
+
+Some benchmark scoring functions are adapted from lmms-eval, as noted
+in their source files: https://github.com/EvolvingLMMs-Lab/lmms-eval
+
+The lmms-eval license text is preserved in licenses/lmms-eval.LICENSE.

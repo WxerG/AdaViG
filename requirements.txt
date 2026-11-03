@@ -1,0 +1,19 @@
+# Python 3.10; CUDA-enabled Linux. Install FlashAttention separately.
+torch==2.7.1
+torchvision==0.22.1
+transformers==4.55.4
+accelerate>=0.34.0,<2
+safetensors==0.4.5
+einops==0.8.1
+numpy==1.24.4
+opencv-python==4.7.0.72
+Pillow>=10,<12
+sentencepiece==0.1.99
+scipy==1.10.1
+sympy>=1.13
+pandas>=2.0,<2.3
+math-verify>=0.8,<0.9
+tqdm>=4.66
+huggingface-hub>=0.34,<1
+regex
+protobuf
